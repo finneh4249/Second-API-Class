@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from init import db, ma, bcrypt, jwt
 from controllers.cli_controllers import db_commands
+from controllers.auth_controller import auth
 
 def create_app():
     app = Flask(__name__)
@@ -14,6 +15,7 @@ def create_app():
     jwt.init_app(app)
 
     app.register_blueprint(db_commands)
+    app.register_blueprint(auth)
 
     return app
 

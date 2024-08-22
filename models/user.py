@@ -8,6 +8,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+
+    cards = db.relationship("Card", back_populates="user")
     
 class UserSchema(ma.Schema): 
 

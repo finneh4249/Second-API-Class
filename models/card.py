@@ -15,10 +15,11 @@ class Card(db.Model):
     user = db.relationship("User", back_populates="cards")
 
 class CardSchema(ma.Schema):
+    user = fields.Nested("UserSchema", only=("id", "name", "email"))
     class Meta:
         fields = ("id", "title", "description", "status", "priority", "date", "user")
 
-    user = fields.Nested("UserSchema", only=("id", "name", "email"))
+    
 
 card_schema = CardSchema()
 cards_schema = CardSchema(many=True)

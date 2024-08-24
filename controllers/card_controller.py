@@ -18,12 +18,18 @@ def get_cards_by_user():
 
 
 @card.route("/<int:id>", methods=["GET"])
+@jwt_required()
 def get_card(id):
     # if card doesnt exist, return error
     card = Card.query.get(id)
 
+    user = User.query.get(get_jwt_identity())
+
     if not card:
         return {"message": "404, Card not found"}, 404
+    
+    if user.id != card.user_id:
+        return {"message": "Unauthorized"}, 401
     
     return card_schema.jsonify(card)
 

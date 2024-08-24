@@ -3,6 +3,7 @@ from init import db, bcrypt
 
 from models.user import User
 from models.card import Card
+from models.comment import Comment
 
 from datetime import date
 db_commands = Blueprint("db", __name__)
@@ -133,12 +134,37 @@ def seed_db():
             user = users[1]
             )
         ]
+    
         
     # Now that we have our cards, we can add them to the database
     # We can do this by calling the `add_all` method on the database session
     # and passing it a list of all of the cards we want to add
     db.session.add_all(cards)
-    
+
+    comments = [
+        Comment(
+            # The first comment will be on the first card
+            card = cards[0],
+            # The first comment will be by the first user
+            user = users[0],
+            # The first comment will have the message 'Perform mandatory github
+            # ops on the project'
+            message = "Perform mandatory github ops on the project"
+            ),
+        Comment(
+            # The second comment will be on the first card
+            card = cards[0],
+            # The second comment will be by the first user
+            user = users[0],
+            # The second comment will have the message 'Perform mandatory github
+            # ops on the project'
+            message = "Perform mandatory github ops on the project"
+            ),
+    ]
+
+    # Now that we have our comments, we can add them to the database
+
+    db.session.add_all(comments)
     # Finally, we need to commit our changes to the database
     # This will save all of the changes we made in the database
     db.session.commit()

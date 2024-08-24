@@ -40,7 +40,7 @@ class Card(db.Model):
 
     # The relationship between the card and the user
     user = db.relationship("User", back_populates="cards")
-    comments = db.relationship("Comment", back_populates="card")
+    comments = db.relationship("Comment", back_populates="card", cascade="all, delete")
 
 class CardSchema(ma.Schema):
     user = fields.Nested("UserSchema", only=("id", "name", "email"))

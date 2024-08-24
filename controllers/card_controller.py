@@ -1,36 +1,44 @@
+from datetime import date
+
 from flask import Blueprint, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from init import db
 from models.card import Card, card_schema, cards_schema
-from models.user import User, user_schema, users_schema
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from models.user import User
 
 card = Blueprint("card", __name__, url_prefix="/cards")
 
 @card.route("/", methods=["GET"])
-def get_cards():
-    cards = Card.query.all()
+@jwt_required()
+def get_cards_by_user():
+    user = User.query.get(get_jwt_identity())
+    cards = Card.query.filter_by(user_id=user.id).all()
     return cards_schema.jsonify(cards)
 
 
 @card.route("/<int:id>", methods=["GET"])
 def get_card(id):
+    # if card doesnt exist, return error
     card = Card.query.get(id)
+
+    if not card:
+        return {"message": "404, Card not found"}, 404
+    
     return card_schema.jsonify(card)
 
-@card.route("/user/<int:id>", methods=["GET"])
-def get_user_cards(id):
-    cards = Card.query.filter_by(user_id=id).all()
-    return cards_schema.jsonify(cards)
-
 @card.route("/", methods=["POST"])
+@jwt_required()
 def create_card():
+    user = User.query.get(get_jwt_identity())
+
     title = request.json["title"]
     description = request.json["description"]
     status = request.json["status"]
     priority = request.json["priority"]
-    date = request.json["date"]
+    today = date.today()
 
-    new_card = Card(title=title, description=description, status=status, priority=priority, date=date)
+    new_card = Card(title=title, description=description, status=status, priority=priority, date=today, user=user)
 
     db.session.add(new_card)
     db.session.commit()
@@ -39,8 +47,14 @@ def create_card():
 
 
 @card.route("/<int:id>", methods=["PUT", "PATCH"])
+@jwt_required()
 def update_card(id):
+    user = User.query.get(get_jwt_identity())
     card = Card.query.get(id)
+
+    # If User is not card user, return error
+    if user.id != card.user_id:
+        return {"message": "Unauthorized"}, 401
 
     if request.method == "PATCH":
         if request.json.get("title"):

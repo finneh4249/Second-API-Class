@@ -9,6 +9,14 @@ from models.user import User
 
 card = Blueprint("card", __name__, url_prefix="/cards")
 
+"""
+/cards - GET - Returns all cards associated with the user that is logged in
+/cards/<int:id> - GET - Returns a single card
+/cards - POST - Creates a new card
+/cards/<int:id> - PUT, PATCH - Updates a card
+/cards/<int:id> - DELETE - Deletes a card
+"""
+
 @card.route("/", methods=["GET"])
 @jwt_required()
 def get_cards_by_user():

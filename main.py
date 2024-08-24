@@ -16,6 +16,10 @@ def create_app():
     """
     # Create a new Flask instance
     app = Flask(__name__)
+
+    # Set the JSON sort keys to False
+    # This is necessary for the Marshmallow schema to work correctly
+    app.json.sort_keys = False
     
     # Set the secret key for the app
     # This is used for signing sessions and JWTs

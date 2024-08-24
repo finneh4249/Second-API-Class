@@ -146,25 +146,11 @@ def update_card(id):
         # If the user is not authorized, return an error message with a 401 status code
         return {"message": "Unauthorized"}, 401
 
-    if request.method == "PATCH":
-        # If the request is a PATCH, it updates the fields specified in the JSON payload
-        if request.json.get("title"):
-            card.title = request.json["title"]
-        if request.json.get("description"):
-            card.description = request.json["description"]
-        if request.json.get("status"):
-            card.status = request.json["status"]
-        if request.json.get("priority"):
-            card.priority = request.json["priority"]
-        if request.json.get("date"):
-            card.date = request.json["date"]
-    else:
-        # If the request is a PUT, it updates all the fields with the ones specified in the JSON payload
-        card.title = request.json["title"]
-        card.description = request.json["description"]
-        card.status = request.json["status"]
-        card.priority = request.json["priority"]
-        card.date = request.json["date"]
+    card.title = request.json.get("title") or card.title
+    card.description = request.json.get("description") or card.description
+    card.status = request.json.get("status") or card.status
+    card.priority = request.json.get("priority") or card.priority
+    card.date = request.json.get("date") or card.date
 
     # Commit the updated card to the database
     db.session.commit()

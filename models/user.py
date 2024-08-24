@@ -24,6 +24,7 @@ class User(db.Model):
     The back_populates parameter is used to build the relationship between a Card and a User
     """
     cards = db.relationship("Card", back_populates="user")
+    comments = db.relationship("Comment", back_populates="user")
     
 class UserSchema(ma.Schema): 
 

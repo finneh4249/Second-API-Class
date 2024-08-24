@@ -18,7 +18,7 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # The message of the comment
-    message = db.Column(db.String),
+    message = db.Column(db.String)
 
     # The foreign key of the card that the comment belongs to
     card_id = db.Column(db.Integer, db.ForeignKey("cards.id"), nullable=False)

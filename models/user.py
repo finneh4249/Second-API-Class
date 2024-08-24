@@ -27,10 +27,11 @@ class User(db.Model):
     comments = db.relationship("Comment", back_populates="user")
     
 class UserSchema(ma.Schema): 
-
+    comments = fields.List(fields.Nested("CommentSchema", exclude=["user"]))
+    cards = fields.List(fields.Nested("CardSchema", exclude=["user"]))
     class Meta:
-        cards = fields.List(fields.Nested("CardSchema", exclude=["user"]))
-        fields = ("id", "name", "email", "password", "is_admin")
+        
+        fields = ("id", "name", "email", "password", "is_admin", "cards", "comments")
 
 user_schema = UserSchema(exclude=["password"])
 users_schema = UserSchema(exclude=["password"], many=True)

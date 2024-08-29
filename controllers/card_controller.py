@@ -7,7 +7,11 @@ from init import db
 from models.card import Card, card_schema, cards_schema
 from models.user import User
 
+from controllers.comment_controller import comment
+
 card = Blueprint("card", __name__, url_prefix="/cards")
+
+card.register_blueprint(comment)
 
 """
 /cards - GET - Returns all cards associated with the user that is logged in

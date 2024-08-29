@@ -6,7 +6,6 @@ from init import db, ma, bcrypt, jwt
 from controllers.cli_controller import db_commands
 from controllers.auth_controller import auth
 from controllers.card_controller import card
-from controllers.comment_controller import comment
 
 def create_app():
     """
@@ -59,7 +58,7 @@ def create_app():
 
     # Register the blueprint for the comment controller
     # This is necessary for using the comment controller
-    app.register_blueprint(comment)
+    
     
     # Return the app
     return app

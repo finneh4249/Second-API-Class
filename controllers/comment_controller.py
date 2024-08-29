@@ -61,7 +61,7 @@ def create_comment(card_id):
     return comment_schema.jsonify(new_comment), 201
 
 
-@comment.route("/<int:id>", methods=["DELETE"])
+@comment.route("/<int:comment_id>", methods=["DELETE"])
 @jwt_required() 
 def delete_comment(card_id, comment_id):
     """
@@ -101,7 +101,7 @@ def delete_comment(card_id, comment_id):
     # Return a success message as a JSON response
     return {"message": "Comment deleted successfully"}
 
-@comment.route("/<int:id>", methods=["PUT", "PATCH"])
+@comment.route("/<int:comment_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_comment(card_id, comment_id):
     """
@@ -140,4 +140,4 @@ def update_comment(card_id, comment_id):
     db.session.commit()
 
     # Return a success message as a JSON response
-    return {"message": "Comment updated successfully"}
+    return comment_schema.jsonify(comment), 200

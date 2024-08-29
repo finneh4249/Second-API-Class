@@ -20,6 +20,8 @@ class Comment(db.Model):
     # The message of the comment
     message = db.Column(db.String)
 
+    date = db.Column(db.Date)
+
     # The foreign key of the card that the comment belongs to
     card_id = db.Column(db.Integer, db.ForeignKey("cards.id"), nullable=False)
 

@@ -143,23 +143,35 @@ def seed_db():
 
     comments = [
         Comment(
+            date = date.today(),
             # The first comment will be on the first card
             card = cards[0],
             # The first comment will be by the first user
             user = users[0],
             # The first comment will have the message 'Perform mandatory github
             # ops on the project'
-            message = "Perform mandatory github ops on the project"
+            message = "Admin is making a comment on Card 0"
             ),
         Comment(
+            date = date.today(),
             # The second comment will be on the first card
-            card = cards[0],
+            card = cards[1],
             # The second comment will be by the first user
             user = users[0],
             # The second comment will have the message 'Perform mandatory github
             # ops on the project'
-            message = "Perform mandatory github ops on the project"
+            message = "Admin is making a comment on Card 1"
             ),
+        Comment(
+            date = date.today(),
+            # The third comment will be on the first card
+            card = cards[0],
+            # The third comment will be by the first user
+            user = users[1],
+            # The third comment will have the message 'Perform mandatory github
+            # ops on the project'
+            message = "The user is making a comment on Card 0"
+            )
     ]
 
     # Now that we have our comments, we can add them to the database

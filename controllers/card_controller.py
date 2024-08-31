@@ -100,11 +100,13 @@ def create_card():
     """
     user = User.query.get(get_jwt_identity())
 
+    body = card_schema.load(request.json)
+
     # Get the title, description, status, and priority from the JSON payload
-    title = request.json["title"]
-    description = request.json["description"]
-    status = request.json["status"]
-    priority = request.json["priority"]
+    title = body["title"]
+    description = body["description"]
+    status = body["status"]
+    priority = body["priority"]
 
     # Create a new card with the given title, description, status, and priority
     today = date.today()
@@ -157,12 +159,14 @@ def update_card(id):
     if user.id != card.user_id:
         # If the user is not authorized, return an error message with a 401 status code
         return {"message": "Unauthorized"}, 401
+    
+    body = card_schema.load(request.json, partial=True)
 
-    card.title = request.json.get("title") or card.title
-    card.description = request.json.get("description") or card.description
-    card.status = request.json.get("status") or card.status
-    card.priority = request.json.get("priority") or card.priority
-    card.date = request.json.get("date") or card.date
+    card.title = body.get("title") or card.title
+    card.description = body.get("description") or card.description
+    card.status = body.get("status") or card.status
+    card.priority = body.get("priority") or card.priority
+    card.date = body.get("date") or card.date
 
     # Commit the updated card to the database
     db.session.commit()

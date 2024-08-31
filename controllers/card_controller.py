@@ -6,7 +6,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from init import db
 from models.card import Card, card_schema, cards_schema
 from models.user import User
-from utils import auth_as_admin
 
 from controllers.comment_controller import comment
 

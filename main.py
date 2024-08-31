@@ -1,6 +1,6 @@
 import os
-
 from flask import Flask
+from marshmallow.exceptions import ValidationError
 
 from init import db, ma, bcrypt, jwt
 from controllers.cli_controller import db_commands
@@ -43,6 +43,12 @@ def create_app():
     # Initialise the JWTManager object
     # This is necessary for generating and verifying JWTs
     jwt.init_app(app)
+
+    # Register the error handler for the ValidationError exception
+    # This is necessary for returning validation errors as JSON responses
+    @app.errorhandler(ValidationError)
+    def handle_validation_error(error):
+        return {"validation_error": error.messages}, 400
     
     # Register the blueprint for the database commands
     # This is necessary for using the database commands
@@ -62,4 +68,5 @@ def create_app():
     
     # Return the app
     return app
+
 

@@ -1,9 +1,8 @@
 from init import db, jwt, bcrypt
-
-from models.user import User, user_schema, users_schema
+from models.user import User, user_schema, UserSchema, users_schema
 
 from flask import Blueprint, request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
@@ -46,10 +45,11 @@ def register():
     """
     This is the registration route. It's used to create new users.
     """
+    body = UserSchema().load(request.json)
     # Get the name, email and password from the request
-    name = request.json.get("name")
-    email = request.json.get("email")
-    password = request.json.get("password")
+    name = body.get("name")
+    email = body.get("email")
+    password = body.get("password")
 
     # Check if a user with the same email already exists
     user = User.query.filter_by(email=email).first()
@@ -76,3 +76,43 @@ def register():
 
     # Return the new user
     return user_schema.jsonify(new_user)
+
+@auth.route("/users", methods=["GET"])
+@jwt_required()
+def get_users():
+    """
+    This function is called when a GET request is sent to the /users endpoint.
+    It returns a list of all the users in the database.
+    """
+    users = User.query.all()
+    return users_schema.jsonify(users)
+
+@auth.route("/users/<int:id>", methods=["PUT", "PATCH"])
+@jwt_required()
+def update_user(id):
+    """
+    This function is called when a PUT or PATCH request is sent to a user with
+    a given id. This is used to update an existing user in the database.
+
+    The request must include a JSON payload with the fields to update, which are
+    """
+    user = User.query.get(id)
+
+    if not user:
+        return {"message": "User not found"}, 404
+
+    if user.id != get_jwt_identity():
+        return {"message": "Unauthorized"}, 401
+
+    body = UserSchema().load(request.json, partial=True)
+
+    if "name" in body:
+        user.name = body["name"]
+    if "email" in body:
+        user.email = body["email"]
+    if "password" in body:
+        user.password = bcrypt.generate_password_hash(body["password"]).decode("utf-8")
+
+    db.session.commit()
+
+    return user_schema.jsonify(user)

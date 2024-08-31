@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from init import db
 from models.card import Card, card_schema, cards_schema
 from models.user import User
+from utils import auth_as_admin
 
 from controllers.comment_controller import comment
 
@@ -34,6 +35,10 @@ def get_cards_by_user():
     """
     # Get the user that is currently logged in
     user = User.query.get(get_jwt_identity())
+
+    if user.is_admin:
+        cards = Card.query.all()
+        return cards_schema.jsonify(cards)
 
     # Query the database for all cards that have the same user_id as the
     # user that is currently logged in
@@ -68,6 +73,9 @@ def get_card(id):
     if not card:
         # If the card doesn't exist, return a 404 error
         return {"message": "404, Card not found"}, 404
+    
+    if user.is_admin:
+        return card_schema.jsonify(card)
     
     # Check if the user is authorized to view this card
     if user.id != card.user_id:
@@ -154,9 +162,8 @@ def update_card(id):
     if not card:
         # If the card doesn't exist, return an error message with a 404 status code
         return {"message": "404, Card not found"}, 404
-
     # Check if the user is authorized to update the card
-    if user.id != card.user_id:
+    if user.id != card.user_id or not user.is_admin:
         # If the user is not authorized, return an error message with a 401 status code
         return {"message": "Unauthorized"}, 401
     
@@ -200,11 +207,9 @@ def delete_card(id):
         return {"message": "404, Card not found"}, 404
     
     # Check if the user is authorized to delete the card
-    if user.id != card.user_id:
+    if user.id != card.user_id or not user.is_admin:
         # If the user is not authorized, return an error message with a 401 status code
         return {"message": "Unauthorized"}, 401
-    
-
     
     # Delete the card from the database
     db.session.delete(card)

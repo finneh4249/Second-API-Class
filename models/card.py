@@ -1,5 +1,5 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validates, ValidationError
 from marshmallow.validate import Length, And, Regexp, OneOf
 
 VALID_STATUS = ("To Do", "In Progress", "Completed", "Testing", "Deployed")
@@ -55,6 +55,18 @@ class CardSchema(ma.Schema):
     status = fields.String(validate=OneOf(VALID_STATUS))
     
     priority = fields.String(validate=OneOf(VALID_PRIORITY))
+
+    @validates("status")
+    def validate_status(self, value):
+        if value == VALID_STATUS[1]:
+            # Check if an existing card has the status "In Progress"
+            stmt = db.select(db.func.count()).select_from(Card).where(Card.status == VALID_STATUS[1])
+            count = db.session.scalar(stmt)
+            if count > 0:
+                raise ValidationError("Status cannot be 'In Progress'")
+            
+        
+    
     class Meta:
         fields = ("id", "title", "description", "status", "priority", "date", "user", "comments")
 
